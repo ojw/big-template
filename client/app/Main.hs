@@ -5,6 +5,6 @@ import Servant.Reflex
 import BigTemplate.Client
 
 main :: IO ()
-main =
-  mainWidget runGUI
+main = main'
+  -- mainWidget runGUI
   -- mainWidget $ el "div" $ text "Ho buddy."

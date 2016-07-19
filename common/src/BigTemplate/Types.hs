@@ -20,5 +20,7 @@ data UserRegistration = UserRegistration
   , registrationEmail :: T.Text
   } deriving Generic
 
+instance FromJSON User
 instance ToJSON User
 instance FromJSON UserRegistration
+instance ToJSON UserRegistration

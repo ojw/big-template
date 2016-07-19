@@ -16,7 +16,10 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src, ../common/src
   exposed-modules:     BigTemplate.Client
+                     , BigTemplate.Types
                      , Servant.Reflex
+                     , Servant.Common.BaseUrl
+                     , Servant.Common.Req
   build-depends:       base >= 4.7 && < 5
                      , haskell-src-exts
                      , reflex

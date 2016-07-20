@@ -14,8 +14,9 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      src, ../common/src
-  exposed-modules:
+  hs-source-dirs:      src
+  exposed-modules:     BigTemplate.Routes
+                     , BigTemplate.Types
   build-depends:       base >= 4.7 && < 5
                      , servant
                      , servant-server

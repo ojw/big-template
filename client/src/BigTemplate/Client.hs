@@ -38,11 +38,16 @@ runGUI = do
         bigTemplateRoutes
         (Proxy :: Proxy (m :: * -> *))
         url
+        -- (constDyn (BasePath "/"))
 
   usersBtn <- button "get users"
   users <- getUsers usersBtn
 
-  -- r <- holdDyn "Waiting" $ fmap _xhrResponse_responseText users
-  -- dynText r
+  let parseReq reqResult = case reqResult of
+        ResponseSuccess a xhrResponse -> "woo"
+        _ -> "lame"
+
+  r <- holdDyn "Waiting" $ fmap parseReq users
+  dynText r
                                                      -- (constDyn (BasePath "/"))
   return ()

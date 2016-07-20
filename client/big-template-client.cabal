@@ -14,9 +14,8 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      src, ../common/src
+  hs-source-dirs:      src
   exposed-modules:     BigTemplate.Client
-                     , BigTemplate.Types
                      , Servant.Reflex
                      , Servant.Common.BaseUrl
                      , Servant.Common.Req

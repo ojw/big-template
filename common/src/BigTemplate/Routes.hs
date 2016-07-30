@@ -9,7 +9,7 @@ import Data.Proxy
 import BigTemplate.Types
 
 type BigTemplateRoutes =
-       "users" :> Get '[JSON] [User]
+       "users" :> Get '[JSON] Int -- [User]
   :<|> "user" :> Capture "id" UserId :> Get '[JSON] User
   :<|> "register" :> ReqBody '[JSON] UserRegistration :> Post '[JSON] UserId
 

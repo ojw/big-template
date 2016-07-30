@@ -60,12 +60,12 @@ showBaseUrl (BaseFullUrl urlscheme host port path) =
 
 baseUrlWidget :: forall t m .MonadWidget t m => m (Dynamic t BaseUrl)
 baseUrlWidget = elClass "div" "base-url" $ do
-  urlWidget <- dropdown (0 :: Int) (constDyn $ 0 =: "BasePath" <> 1 =: "BaseUrlFull") def
+  urlWidget <- dropdown (0 :: Int) (constDyn $ 0 =: "BaseUrlFull" <> 1 =: "BasePath") def
   bUrlWidget <- forDyn (value urlWidget) $ \i -> case i of
-    0 -> pathWidget
-    1 -> fullUrlWidget
+    0 -> fullUrlWidget
+    1 -> pathWidget
     _ -> error "Surprising value"
-  joinDyn <$> widgetHold pathWidget (updated bUrlWidget)
+  joinDyn <$> widgetHold fullUrlWidget (updated bUrlWidget)
   where pathWidget :: m (Dynamic t BaseUrl)
         pathWidget = do
           text "Url base path"
@@ -80,9 +80,9 @@ baseUrlWidget = elClass "div" "base-url" $ do
           prt  <- textInput def { _textInputConfig_attributes = constDyn $ "placeholder" =: "80"}
           port :: Dynamic t Int <- holdDyn 80 (fmapMaybe readMaybe $ updated (value prt))
           path <- textInput def { _textInputConfig_attributes = constDyn $ "placeholder" =: "a/b" }
-          BaseFullUrl `mapDyn` value schm `myApDyn` value srv `myApDyn` port `myApDyn` value path
+          BaseFullUrl `mapDyn` value schm `apDyn` value srv `apDyn` port `apDyn` value path
 
-myApDyn :: MonadWidget t m => m (Dynamic t (a -> b)) -> Dynamic t a -> m (Dynamic t b)
-myApDyn f' a = do
+apDyn :: MonadWidget t m => m (Dynamic t (a -> b)) -> Dynamic t a -> m (Dynamic t b)
+apDyn f' a = do
   f <- f'
   combineDyn ($) f a

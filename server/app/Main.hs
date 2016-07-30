@@ -9,4 +9,4 @@ import BigTemplate.Server
 main :: IO ()
 main = do
   userState <- newUserState
-  run 8080 (bigTemplateApp userState)
+  run 8080 (fullBigTemplateApp userState)

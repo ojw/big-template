@@ -14,13 +14,15 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      src
+  hs-source-dirs:      src, ../common/src
   exposed-modules:     BigTemplate.Client
                      , Servant.Reflex
                      , Servant.Common.BaseUrl
                      , Servant.Common.Req
+                     , BigTemplate.Types
+                     , BigTemplate.Routes
   build-depends:       base >= 4.7 && < 5
-                     , big-template-common
+                     , servant-client
                      , haskell-src-exts
                      , reflex
                      , reflex-dom
@@ -29,7 +31,7 @@ library
                      , text
                      , aeson
                      , servant
-                     , servant-foreign
+                     -- , servant-foreign
                      -- just for servant-reflex
                      , exceptions
                      , network-uri

@@ -33,9 +33,6 @@ import Servant.API.ContentTypes
 import Reflex
 import Reflex.Dom
 
-import Servant.API.BasicAuth
-import qualified Data.ByteString.Char8 as BS
-
 -- import qualified Network.HTTP.Client as Client
 
 import Web.HttpApiData
@@ -69,11 +66,10 @@ data Req t = Req
   , reqBody      :: Maybe (Behavior t (Either String (BL.ByteString, String)))
   -- , reqAccept    :: [MediaType]  -- TODO ?
   , headers      :: [(String, Behavior t String)]
-  , authData     :: Maybe (Behavior t (Maybe BasicAuthData))
   }
 
 defReq :: Reflex t => Req t
-defReq = Req "GET" [] [] Nothing [] Nothing
+defReq = Req "GET" [] [] Nothing []
 
 prependToPathParts :: Reflex t => Behavior t (Either String String) -> Req t -> Req t
 prependToPathParts p req =
@@ -143,6 +139,7 @@ performRequest reqMethod req reqHost trigger = do
       xhrHeaders :: Behavior t [(String, String)]
       xhrHeaders = sequence $ ffor (headers req) $ \(hName, hVal) -> fmap (hName,) hVal
 
+
       mkConfigBody :: [(String,String)] -> (Either String (BL.ByteString, String)) -> Either String XhrRequestConfig
       mkConfigBody hs rb = case rb of
                   Left e               -> Left e
@@ -155,20 +152,7 @@ performRequest reqMethod req reqHost trigger = do
       xhrOpts = case reqBody req of
         Nothing    -> fmap (\h -> Right $ def { _xhrRequestConfig_headers = Map.fromList h }) xhrHeaders
         Just rBody -> liftA2 mkConfigBody xhrHeaders rBody
-
-      mkAuth :: Maybe BasicAuthData -> Either String XhrRequestConfig -> Either String XhrRequestConfig
-      mkAuth _ (Left e) = Left e
-      mkAuth Nothing r  = r
-      mkAuth (Just (BasicAuthData u p)) (Right config) = Right $ config
-        { _xhrRequestConfig_user     = Just $ BS.unpack u
-        , _xhrRequestConfig_password = Just $ BS.unpack p}
-
-      addAuth :: Behavior t (Either String XhrRequestConfig) -> Behavior t (Either String XhrRequestConfig)
-      addAuth xhr = case authData req of
-        Nothing -> xhr
-        Just auth -> liftA2 mkAuth auth xhr
-
-      xhrReq = (liftA2 . liftA2) (\p opt -> XhrRequest reqMethod p opt) xhrUrl (addAuth xhrOpts)
+      xhrReq = (liftA2 . liftA2) (\p opt -> XhrRequest reqMethod p opt) xhrUrl xhrOpts
 
   let reqs    = tag xhrReq trigger
       okReqs  = fmapMaybe (either (const Nothing) Just) reqs

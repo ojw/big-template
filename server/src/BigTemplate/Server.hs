@@ -1,3 +1,6 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+
 module BigTemplate.Server where
 
 import Servant
@@ -46,10 +49,13 @@ lookupUser userStateRef userId = do
 getUsers' :: UserState -> [User]
 getUsers' state = I.elems (users state)
 
-getUsers :: MonadIO m => IORef UserState -> m [User]
+getUsers :: MonadIO m => IORef UserState -> m Int
 getUsers userStateRef = do
-  userState <- liftIO $ readIORef userStateRef
-  return $ getUsers' userState
+  -- userState <- liftIO $ readIORef userStateRef
+  -- return $ getUsers' userState
+  -- liftIO $ putStrLn "hit the route"
+  -- return [User 1 (T.pack "James") (T.pack "email")]
+  return 10
 
 makeUserMap :: IO (IORef (I.IntMap User))
 makeUserMap = newIORef I.empty
@@ -62,3 +68,11 @@ bigTemplateServer userStateRef =
 
 bigTemplateApp :: IORef UserState -> Application
 bigTemplateApp ref = serve bigTemplateRoutes (bigTemplateServer ref)
+
+type ApiWithFiles = "static" :> Raw :<|> BigTemplateRoutes
+
+fullBigTemplateServer :: IORef UserState -> Server ApiWithFiles
+fullBigTemplateServer ref = serveDirectory "/home/james/code/big-template/client/.stack-work/dist/x86_64-linux/Cabal-1.24.0.0_ghcjs/build/big-template-exe/big-template-exe.jsexe" :<|> bigTemplateServer ref
+
+fullBigTemplateApp :: IORef UserState -> Application
+fullBigTemplateApp ref = serve (Proxy :: Proxy ApiWithFiles) (fullBigTemplateServer ref)
